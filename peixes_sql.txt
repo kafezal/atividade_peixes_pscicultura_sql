@@ -1,0 +1,131 @@
+create schema PeixeBom_Sao_Francisco;
+
+criando os fornecedores:
+create table fornecedores(
+	id_fornecedor int not null auto_increment primary key,
+    nome varchar(100) not null,
+    telefone varchar(20) not null,
+    cidade varchar(60) not null,
+    produto_fornecido varchar(80) not null
+);
+
+criando os tanques:
+create table tanques (
+	id_tanque int primary key not null auto_increment,
+    identificacao varchar(30) not null,
+    capacidade int not null,
+    localizacao varchar(80) not null,
+    status_tanque varchar(30) not null
+);
+
+criando os produção:
+create table producao (
+	id_producao int primary key not null auto_increment,
+    id_tanque int not null,
+    especie varchar(60) not null unique,
+    qtd_peixes int not null,
+    peso_medio decimal(10, 2) not null,
+    data_registro date not null,
+    foreign key(id_tanque)
+	references tanques(id_tanque)
+);
+
+criando os clientes:
+create table clientes (
+	id_cliente int primary key not null auto_increment,
+    nome varchar(100) not null,
+    telefone varchar(20) not null,
+    cidade varchar(60) not null,
+    tipo_cliente varchar(40) not null
+);
+
+criando os vendas:
+create table vendas (
+	id_venda int primary key not null auto_increment,
+    id_cliente int not null,
+    especie varchar(60) not null,
+    qtd_kg decimal(10, 2) not null,
+    preco_kg decimal(10, 2) not null,
+    valor_total decimal(10, 2) not null,
+    data_venda date not null,
+    foreign key(id_cliente) references clientes(id_cliente),
+    constraint fk_vendas_producao foreign key (especie) references producao (especie)
+);
+
+inserção de dados:
+
+fornecedores:
+INSERT INTO fornecedores (nome, telefone, cidade, produto_fornecido) VALUES
+('João Silva', '(87) 98845-1234', 'Petrolina', 'Frutos do mar'),
+('Maria Oliveira', '(87) 99123-4567', 'Juazeiro', 'rações para peixes'),
+('Carlos Santos', '(87) 98765-4321', 'Recife', 'Produtos de pscicultura'),
+('Ana Costa', '(87) 99234-5678', 'Salgueiro', 'Peixes');
+
+tanques:
+INSERT INTO tanques (identificacao, capacidade, localizacao, status_tanque) VALUES
+('Tanque T01', 5000, 'Setor A - Área Norte', 'Ativo'),
+('Tanque T02', 7000, 'Setor A - Área Sul', 'Ativo'),
+('Tanque T03', 6000, 'Setor B - Área Norte', 'Ativo'),
+('Tanque T04', 8000, 'Setor B - Área Sul', 'Manutenção'),
+('Tanque T05', 10000, 'Setor C - Área Central', 'Ativo');
+
+producao:
+INSERT INTO producao (id_tanque, especie, qtd_peixes, peso_medio, data_registro) VALUES
+(1, 'Tilápia', 2500, 0.85, '2026-10-01'),
+(2, 'Tambaqui', 1800, 1.20, '2026-10-03'),
+(3, 'Pacu', 1500, 0.95, '2026-10-05'),
+(4, 'Pirarucu', 800, 2.50, '2026-10-07'),
+(5, 'Carpa', 2000, 0.75, '2026-10-09'),
+(1, 'Tambacu', 1200, 1.10, '2026-10-11'),
+(2, 'Pintado', 900, 1.80, '2026-10-13'),
+(3, 'Curimatã', 1700, 0.65, '2026-10-15');
+
+clientes:
+INSERT INTO clientes (nome, telefone, cidade, tipo_cliente) VALUES
+('Roberto Almeida', '(87) 98811-2233', 'Petrolina', 'Pessoa Física'),
+('Comercial Peixe Bom', '(87) 98822-3344', 'Juazeiro', 'Pessoa Jurídica'),
+('Fernanda Souza', '(87) 98833-4455', 'Petrolina', 'Atacarejo'),
+('Mercado São José', '(87) 98844-5566', 'Lagoa Grande', 'Pessoa Jurídica'),
+('Marcos Pereira', '(87) 98855-6677', 'Salgueiro', 'Restaurante'),
+('Distribuidora Nordeste', '(87) 98866-7788', 'Recife', 'Pessoa Jurídica');
+
+vendas:
+INSERT INTO vendas (id_cliente, especie, qtd_kg, preco_kg, valor_total, data_venda) VALUES
+(1, 'Tilápia', 50.00, 18.00, 900.00, '2026-10-16'),
+(2, 'Tambaqui', 100.00, 22.00, 2200.00, '2026-10-17'),
+(3, 'Pacu', 35.00, 20.00, 700.00, '2026-10-18'),
+(4, 'Pirarucu', 80.00, 35.00, 2800.00, '2026-10-19'),
+(5, 'Carpa', 40.00, 16.00, 640.00, '2026-10-20'),
+(6, 'Tambacu', 60.00, 24.00, 1440.00, '2026-10-21'),
+(1, 'Pintado', 45.00, 28.00, 1260.00, '2026-10-22'),
+(2, 'Curimatã', 70.00, 17.00, 1190.00, '2026-10-23');
+
+
+situação problema:
+
+1-mudar telefone do fornecedor:
+->update fornecedores set telefone = '(89)21219-0887' where id_fornecedor = '3';
+
+2-mudar status do tanque:
+->update tanques set status_tanque = 'Manutenção' where id_tanque = '3';
+
+3-alterando a quantidade de peixes num tanque:
+->update producao set qtd_peixes = '2100' where id_producao = '7';
+
+4-alterando o preço da tilápia:
+->update vendas set preco_kg = '19.80', valor_total = '990' where id_venda = '1';
+
+5-alterando tipo cliente:
+->update clientes set tipo_cliente = 'Restaurante' where id_cliente = '5';
+
+consultas obrigatorias:
+1-listar nome de fornecedor:
+select nome from fornecedores;
+
+2-quantos tanques disponiveis:
+select identificacao from tanques where status_tanque ='Ativo';
+
+3-quantos tanques em manutanção:
+->select identificacao from tanques where status_tanque ='Manutenção';
+
+4-
