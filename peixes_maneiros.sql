@@ -1,0 +1,1 @@
+select identificacao from tanques where status_tanque ='Manutenção';
